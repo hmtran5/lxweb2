@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nail Art Try-On</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Library to handle HEIC image conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Set the new background image permanently */
+            background-image: url('1761105400907-4b09be2e-0f86-4789-8672-1699e0b96cca_2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease-in-out;
+        }
+        main {
+            /* Increased opacity for better readability on the new background */
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .header-text {
+            /* Added a subtle shadow for better contrast */
+            text-shadow: 0 1px 3px rgba(255,255,255,0.4);
+        }
+        .upload-box {
+            border: 2px dashed #d1d5db;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .upload-box:hover {
+            background-color: #f3f4f6;
+            border-color: #4f46e5;
+        }
+        .upload-box img {
+            max-height: 250px;
+            object-fit: contain; 
+        }
+        .spinner {
+            border-top-color: #4f46e5;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+        .btn-primary:disabled {
+            background-color: #a5b4fc;
+            cursor: not-allowed;
+        }
+        .nail-shape-option.selected {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+            box-shadow: 0 0 0 2px #4f46e5;
+        }
+       
+        /* New Brush Painting Animation */
+        @keyframes paint-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0%); }
+        }
+        .animated-paint {
+            animation: paint-up 1.8s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(20deg); }
+            50% { transform: rotate(-20deg); }
+        }
+        .brush-swing-container {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: swing 1.8s ease-in-out infinite;
+            transform-origin: 50% 100%;
+        }
+        .brush-elements {
+            width: 20px;
+            margin: 0 auto;
+        }
+        .handle {
+            height: 40px;
+            background-color: #9ca3af;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        .bristles {
+            height: 20px;
+            background-color: #6366f1;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8 relative">
+            <!-- Updated text color to match the new background theme -->
+            <h1 class="text-4xl sm:text-5xl font-bold text-green-900 header-text">AI Nail Art Try-On</h1>
+            <p class="mt-2 text-lg text-gray-700 max-w-2xl mx-auto header-text">Upload a picture of your hand and a model's hand to see the nail art magically applied!</p>
+            <!-- Removed the background upload button -->
+        </header>
+
+        <main class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 sm:p-8">
+            <!-- Step-by-step instructions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-center">
+                <div class="p-4">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600 mx-auto mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">1. Upload Your Hand</h3>
+                    <p class="text-gray-500 mt-1">Choose a clear photo of your hand.</p>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600 mx-auto mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">2. Upload Model's Hand</h3>
+                    <p class="text-gray-500 mt-1">Pick an image with the nail art you love.</p>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600 mx-auto mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">3. Choose Shape (Optional)</h3>
+                    <p class="text-gray-500 mt-1">Select a nail tip and length.</p>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600 mx-auto mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">4. See the Magic</h3>
+                    <p class="text-gray-500 mt-1">Our AI will transfer the nail design.</p>
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- User Hand Upload -->
+                <div class="flex flex-col items-center">
+                    <label for="userHand" class="w-full h-64 upload-box rounded-lg flex flex-col justify-center items-center cursor-pointer p-4">
+                        <img id="userHandPreview" class="hidden rounded-md w-full h-full" alt="User's hand preview">
+                        <div id="userHandPlaceholder" class="text-center text-gray-500">
+                            <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 4v.01M28 8L36 16m0 0v12m0-12h8m-8 6h.01M12 16h12m-12 4h12m-12 4h12m-12 4h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                            <span class="mt-2 block font-medium">Upload your hand image</span>
+                            <span class="text-sm">JPG, PNG, WEBP, HEIC</span>
+                        </div>
+                    </label>
+                    <input type="file" id="userHand" class="hidden" accept="image/jpeg, image/png, image/webp, image/heic, image/heif">
+                </div>
+                <!-- Model Hand Upload -->
+                <div class="flex flex-col items-center">
+                    <label for="modelHand" class="w-full h-64 upload-box rounded-lg flex flex-col justify-center items-center cursor-pointer p-4">
+                        <img id="modelHandPreview" class="hidden rounded-md w-full h-full" alt="Model's hand preview">
+                        <div id="modelHandPlaceholder" class="text-center text-gray-500">
+                             <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 4v.01M28 8L36 16m0 0v12m0-12h8m-8 6h.01M12 16h12m-12 4h12m-12 4h12m-12 4h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                            <span class="mt-2 block font-medium">Upload model hand image</span>
+                            <span class="text-sm">JPG, PNG, WEBP, HEIC</span>
+                        </div>
+                    </label>
+                    <input type="file" id="modelHand" class="hidden" accept="image/jpeg, image/png, image/webp, image/heic, image/heif">
+                </div>
+            </div>
+
+            <!-- Optional Nail Shape Section -->
+            <div class="mb-8 border-t pt-8">
+                <h3 class="text-xl font-semibold text-center mb-6 text-gray-800">Customize Nail Shape (Optional)</h3>
+                <div class="max-w-2xl mx-auto">
+                    <!-- Nail Tip Shape -->
+                    <div class="mb-6">
+                        <label class="block text-center text-gray-600 mb-3 font-medium">Nail Tip</label>
+                        <div class="flex justify-center gap-4 sm:gap-6">
+                            <div data-shape="sharp" class="nail-shape-option cursor-pointer p-2 border-2 border-gray-300 rounded-lg text-center transition-all duration-200 hover:border-indigo-400">
+                                <svg width="80" height="80" viewBox="0 0 100 100" class="mx-auto bg-gray-100 rounded-md"><path d="M25 95 C 45 40, 55 40, 75 95 L 75 95 L 25 95" stroke="#a7a7a7" fill="#fde2e4" stroke-width="2" transform="matrix(1 0 0 -1 0 100)"/></svg>
+                                <span class="mt-2 block font-medium text-gray-700">Sharp</span>
+                            </div>
+                            <div data-shape="square" class="nail-shape-option cursor-pointer p-2 border-2 border-gray-300 rounded-lg text-center transition-all duration-200 hover:border-indigo-400">
+                                <svg width="80" height="80" viewBox="0 0 100 100" class="mx-auto bg-gray-100 rounded-md"><path d="M25 95 L 25 20 L 75 20 L 75 95 Z" stroke="#a7a7a7" fill="#fde2e4" stroke-width="2"/></svg>
+                                <span class="mt-2 block font-medium text-gray-700">Square</span>
+                            </div>
+                            <div data-shape="oval" class="nail-shape-option cursor-pointer p-2 border-2 border-gray-300 rounded-lg text-center transition-all duration-200 hover:border-indigo-400">
+                                <svg width="80" height="80" viewBox="0 0 100 100" class="mx-auto bg-gray-100 rounded-md"><path d="M25 95 L 25 45 C 25 15, 75 15, 75 45 L 75 95 Z" stroke="#a7a7a7" fill="#fde2e4" stroke-width="2"/></svg>
+                                <span class="mt-2 block font-medium text-gray-700">Oval</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Nail Length -->
+                    <div class="mb-6">
+                        <label for="nailLength" class="block text-center text-gray-600 mb-3 font-medium">Nail Length</label>
+                        <div class="flex items-center justify-center gap-4 text-gray-500 max-w-sm mx-auto">
+                            <span>Short</span>
+                            <input id="nailLength" type="range" min="1" max="3" value="2" class="w-full accent-indigo-600">
+                            <span>Long</span>
+                        </div>
+                    </div>
+                    <!-- Advanced Settings -->
+                    <div class="border-t pt-6">
+                         <h4 class="text-lg font-semibold text-center mb-4 text-gray-700">Advanced Settings</h4>
+                         <!-- Temperature -->
+                         <div class="mb-4">
+                            <label for="temperature" class="block text-center text-gray-600 mb-2 font-medium">Creativity (Temperature): <span id="temperatureValue" class="font-bold text-indigo-600">0.4</span></label>
+                            <div class="flex items-center justify-center gap-4 text-gray-500 max-w-sm mx-auto">
+                                <span>Safe</span>
+                                <input id="temperature" type="range" min="0" max="1" step="0.1" value="0.4" class="w-full accent-indigo-600">
+                                <span>Creative</span>
+                            </div>
+                         </div>
+                         <!-- Top P -->
+                         <div>
+                            <label for="topP" class="block text-center text-gray-600 mb-2 font-medium">Predictability (Top P): <span id="topPValue" class="font-bold text-indigo-600">0.9</span></label>
+                            <div class="flex items-center justify-center gap-4 text-gray-500 max-w-sm mx-auto">
+                                <span>Focused</span>
+                                <input id="topP" type="range" min="0.1" max="1" step="0.1" value="0.9" class="w-full accent-indigo-600">
+                                <span>Random</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center mb-8 border-t pt-8">
+                <button id="generateBtn" class="btn-primary text-white font-bold py-3 px-10 rounded-full text-lg shadow-lg disabled:shadow-none" disabled>
+                    Try It On!
+                </button>
+            </div>
+            
+            <!-- Result Section -->
+            <div id="resultSection" class="hidden">
+                 <h2 class="text-3xl font-bold text-center mb-6 text-gray-900">Your Virtual Try-On Result</h2>
+                 <div id="loading" class="hidden text-center p-8">
+                    <!-- New Brush Painting Animation -->
+                    <div class="relative w-24 h-24 mx-auto mb-4">
+                        <svg class="absolute inset-0 m-auto w-16 h-20" viewBox="0 0 60 80">
+                            <defs>
+                                <clipPath id="nail-clip">
+                                    <path d="M10,80 Q10,20 30,10 Q50,20 50,80 Z"></path>
+                                </clipPath>
+                            </defs>
+                            <path d="M10,80 Q10,20 30,10 Q50,20 50,80 Z" fill="#f3f4f6" stroke="#d1d5db" stroke-width="3"></path>
+                            <g clip-path="url(#nail-clip)">
+                                <rect class="animated-paint" x="0" y="0" width="60" height="80" fill="#a5b4fc"></rect>
+                            </g>
+                        </svg>
+                        <div class="brush-swing-container">
+                            <div class="brush-elements">
+                                <div class="handle"></div>
+                                <div class="bristles"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="loading-text" class="mt-4 text-gray-600">Applying the nail art... This might take a moment.</p>
+                </div>
+                <div id="error" class="hidden text-center p-6 bg-red-100 text-red-700 rounded-lg"></div>
+                <div id="resultImageContainer" class="hidden bg-gray-50 p-4 rounded-lg">
+                    <img id="resultImage" class="w-full max-w-xl mx-auto rounded-lg shadow-md" alt="Generated nail art on user's hand">
+                </div>
+            </div>
+
+        </main>
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>Powered by AI. For entertainment purposes only.</p>
+        </footer>
+    </div>
+
+    <script>
+        const userHandInput = document.getElementById('userHand');
+        const modelHandInput = document.getElementById('modelHand');
+        const userHandPreview = document.getElementById('userHandPreview');
+        const modelHandPreview = document.getElementById('modelHandPreview');
+        const userHandPlaceholder = document.getElementById('userHandPlaceholder');
+        const modelHandPlaceholder = document.getElementById('modelHandPlaceholder');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultSection = document.getElementById('resultSection');
+        const loading = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
+        const errorDiv = document.getElementById('error');
+        const resultImageContainer = document.getElementById('resultImageContainer');
+        const resultImage = document.getElementById('resultImage');
+        const nailShapeOptions = document.querySelectorAll('.nail-shape-option');
+        const nailLengthSlider = document.getElementById('nailLength');
+        const temperatureSlider = document.getElementById('temperature');
+        const temperatureValue = document.getElementById('temperatureValue');
+        const topPSlider = document.getElementById('topP');
+        const topPValue = document.getElementById('topPValue');
+        // const bgUploadInput = document.getElementById('bgUpload'); // Removed
+
+        let userHandDataUri = null;
+        let modelHandDataUri = null;
+        let selectedNailShape = null;
+        let selectedNailLength = 'medium long'; // Default
+        let temperature = 0.4;
+        let topP = 0.9;
+        
+        // Removed the background upload event listener
+        
+        const updateModelPreview = async () => {
+            // Only proceed if both images have been uploaded
+            if (!userHandDataUri || !modelHandDataUri) {
+                // If only the model hand is present, ensure its preview is the original image
+                if (modelHandDataUri) {
+                    modelHandPreview.src = modelHandDataUri;
+                }
+                return;
+            }
+
+            try {
+                // Get dimensions from the user's hand image
+                const userImage = await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = userHandDataUri;
+                });
+                const targetWidth = userImage.width;
+                const targetHeight = userImage.height;
+
+                // Resize and pad the model image
+                const paddedModelHandDataUri = await resizeAndPadImage(modelHandDataUri, targetWidth, targetHeight);
+
+                // Update the preview with the padded image
+                modelHandPreview.src = paddedModelHandDataUri;
+                modelHandPreview.classList.remove('hidden');
+                modelHandPlaceholder.classList.add('hidden');
+
+            } catch (error) {
+                console.error("Failed to update model preview:", error);
+                // Fallback to showing the original image if padding fails
+                modelHandPreview.src = modelHandDataUri;
+            }
+        };
+
+
+        const handleFileChange = (input, preview, placeholder, storage) => {
+            input.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+
+                // Function to set the final image data and update the UI
+                const setImageData = (dataUri) => {
+                    preview.src = dataUri; // Show original initially to give feedback
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    if (storage === 'user') {
+                        userHandDataUri = dataUri;
+                    } else {
+                        modelHandDataUri = dataUri;
+                    }
+                    checkInputs();
+                    updateModelPreview(); // Trigger the preview update
+                };
+
+                const fileName = file.name.toLowerCase();
+                const fileType = file.type.toLowerCase();
+
+                // Check if the file is a HEIC/HEIF image that needs conversion
+                if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || fileType === 'image/heic' || fileType === 'image/heif') {
+                    resultSection.classList.remove('hidden');
+                    loading.classList.remove('hidden');
+                    errorDiv.classList.add('hidden');
+                    generateBtn.disabled = true;
+
+                    try {
+                        const convertedBlob = await heic2any({
+                            blob: file,
+                            toType: "image/jpeg",
+                            quality: 0.9,
+                        });
+                        
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            setImageData(reader.result);
+                        };
+                        reader.readAsDataURL(convertedBlob);
+
+                    } catch (err) {
+                        console.error("HEIC conversion failed:", err);
+                        showError("Could not convert HEIC file. Please try a different format like JPG or PNG.");
+                    } finally {
+                        loading.classList.add('hidden');
+                        checkInputs(); 
+                    }
+                } else {
+                    // Handle standard formats (JPG, PNG, WEBP) directly
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setImageData(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        };
+
+        handleFileChange(userHandInput, userHandPreview, userHandPlaceholder, 'user');
+        handleFileChange(modelHandInput, modelHandPreview, modelHandPlaceholder, 'model');
+
+        const checkInputs = () => {
+            if (userHandDataUri && modelHandDataUri) {
+                generateBtn.disabled = false;
+            } else {
+                generateBtn.disabled = true;
+            }
+        };
+
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+        
+        // Event listeners for nail shape customization
+        nailShapeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const currentShape = option.dataset.shape;
+                // If the clicked one is already selected, deselect it
+                if (option.classList.contains('selected')) {
+                    selectedNailShape = null;
+                    option.classList.remove('selected');
+                } else {
+                    // Otherwise, deselect all and select the new one
+                    nailShapeOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedNailShape = currentShape;
+                }
+            });
+        });
+
+        nailLengthSlider.addEventListener('input', (event) => {
+            const value = event.target.value;
+            if (value === '1') {
+                selectedNailLength = 'short';
+            } else if (value === '2') {
+                selectedNailLength = 'medium long';
+            } else {
+                selectedNailLength = 'very long';
+            }
+        });
+        
+        temperatureSlider.addEventListener('input', (event) => {
+            temperature = parseFloat(event.target.value);
+            temperatureValue.textContent = temperature.toFixed(1);
+        });
+
+        topPSlider.addEventListener('input', (event) => {
+            topP = parseFloat(event.target.value);
+            topPValue.textContent = topP.toFixed(1);
+        });
+
+
+        /**
+         * Resizes an image to fit within target dimensions while maintaining aspect ratio,
+         * padding the background with a white color.
+         * @param {string} sourceDataUrl The image to resize and pad.
+         * @param {number} targetWidth The width of the output canvas.
+         * @param {number} targetHeight The height of the output canvas.
+         * @returns {Promise<string>} A promise that resolves with the new image as a data URL.
+         */
+        async function resizeAndPadImage(sourceDataUrl, targetWidth, targetHeight) {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+                image.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    const ctx = canvas.getContext('2d');
+
+                    // Fill background with white
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+                    const sourceAspectRatio = image.width / image.height;
+                    const targetAspectRatio = targetWidth / targetHeight;
+
+                    let drawWidth = targetWidth;
+                    let drawHeight = targetHeight;
+                    
+                    if (sourceAspectRatio > targetAspectRatio) {
+                        // Image is wider than target aspect ratio, fit to width
+                        drawHeight = targetWidth / sourceAspectRatio;
+                    } else {
+                        // Image is taller or same aspect ratio, fit to height
+                        drawWidth = targetHeight * sourceAspectRatio;
+                    }
+
+                    const dx = (targetWidth - drawWidth) / 2;
+                    const dy = (targetHeight - drawHeight) / 2;
+                    
+                    ctx.drawImage(image, dx, dy, drawWidth, drawHeight);
+                    
+                    resolve(canvas.toDataURL('image/jpeg', 0.9));
+                };
+                image.onerror = reject;
+                image.src = sourceDataUrl;
+            });
+        }
+
+
+        generateBtn.addEventListener('click', async () => {
+            if (!userHandDataUri || !modelHandDataUri) {
+                showError('Please upload both images before generating.');
+                return;
+            }
+
+            resultSection.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            resultImageContainer.classList.add('hidden');
+            generateBtn.disabled = true;
+
+            try {
+                // Step 1: Clean and trim nails
+                loadingText.textContent = 'Step 1: Preparing your nails...';
+                const cleanedHandDataUri = await cleanAndTrimNails(userHandDataUri);
+
+                // Step 2: Apply the new style
+                loadingText.textContent = 'Step 2: Applying the new style...';
+                const userImage = await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = cleanedHandDataUri;
+                });
+                const targetWidth = userImage.width;
+                const targetHeight = userImage.height;
+
+                const paddedModelHandDataUri = await resizeAndPadImage(modelHandDataUri, targetWidth, targetHeight);
+                await applyNailStyle(cleanedHandDataUri, paddedModelHandDataUri);
+
+            } catch (err) {
+                console.error('API call or image processing failed:', err);
+                let errorMessage = 'Sorry, something went wrong. Please try again.';
+                 if (err.message.includes('429')) {
+                    errorMessage = "API rate limit reached. Please wait a moment and try again.";
+                } else if (err.message) {
+                    errorMessage = err.message;
+                }
+                showError(errorMessage);
+            } finally {
+                loading.classList.add('hidden');
+                generateBtn.disabled = false;
+            }
+        });
+        
+        async function cleanAndTrimNails(userHandData) {
+            const apiKey = "AIzaSyACnxdrhx7jdPAxoOsj0ER_1MKzWxk9ec0";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            const userImagePart = { inlineData: { mimeType: userHandData.match(/:(.*?);/)[1], data: userHandData.split(',')[1] } };
+            
+            const promptText = "In the provided image of a hand, completely remove any existing nail polish to make all nails look natural and bare. Also, trim the nails to be very short. The final image should maintain the original background, lighting, and skin tone.";
+
+            const payload = {
+                contents: [{ parts: [ { text: promptText }, userImagePart ] }],
+                generationConfig: { 
+                    responseModalities: ['IMAGE'],
+                    temperature: 0.2, // Low temp for a predictable cleaning job
+                    topP: 0.9,
+                },
+            };
+
+            const response = await makeApiCallWithRetry(apiUrl, payload);
+            const result = await response.json();
+            const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+             if (!base64Data) {
+                console.error("API Error Response (Clean & Trim):", result);
+                const errorMessage = result?.candidates?.[0]?.finishReason === 'SAFETY' 
+                    ? "Image processing failed due to safety filters. Please try with a different image."
+                    : "Could not process the initial nail cleaning step.";
+                throw new Error(errorMessage);
+            }
+            return `data:image/png;base64,${base64Data}`;
+        }
+
+
+        async function applyNailStyle(userHandData, modelHandData) {
+            const apiKey = "AIzaSyACnxdrhx7jdPAxoOsj0ER_1MKzWxk9ec0";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+
+            const userImagePart = { inlineData: { mimeType: userHandData.match(/:(.*?);/)[1], data: userHandData.split(',')[1] } };
+            const modelImagePart = { inlineData: { mimeType: modelHandData.match(/:(.*?);/)[1], data: modelHandData.split(',')[1] } };
+            
+            let promptText = "Your primary task is to apply the nail art from the model's hand (second image) to the user's hand (first image). You must follow these instructions with extreme care: 1. Identify EVERY SINGLE visible nail on the user's hand. 2. Flawlessly apply the nail art style from the model's hand to ALL of those identified nails. Do not miss any. 3. Adhere to the following nail shape and length modifications:";
+            
+            if (selectedNailShape) {
+                promptText += ` The shape of the nail tips must be ${selectedNailShape}.`;
+            } else {
+                 promptText += ` Keep the natural nail shape.`;
+            }
+            
+            promptText += ` The length of the nails must be ${selectedNailLength}.`;
+
+            promptText += " 4. It is absolutely critical to preserve the original background, lighting, and skin tone of the user's hand image. The only change should be the nails.";
+
+
+            const payload = {
+                contents: [{ parts: [ { text: promptText }, userImagePart, modelImagePart ] }],
+                generationConfig: { 
+                    responseModalities: ['IMAGE'],
+                    temperature: temperature,
+                    topP: topP,
+                },
+            };
+
+            const response = await makeApiCallWithRetry(apiUrl, payload);
+            const result = await response.json();
+            const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+            if (!base64Data) {
+                console.error("API Error Response (Apply Style):", result);
+                const errorMessage = result?.candidates?.[0]?.finishReason === 'SAFETY' 
+                    ? "Image generation failed due to safety filters. Please try with different images."
+                    : "Could not extract image data from the API response.";
+                throw new Error(errorMessage);
+            }
+
+            resultImage.src = `data:image/png;base64,${base64Data}`;
+            resultImageContainer.classList.remove('hidden');
+        }
+
+        async function makeApiCallWithRetry(url, payload) {
+            let response;
+            let retries = 3;
+            let delay = 1000;
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) return response;
+
+                    if (response.status === 429 && i < retries - 1) {
+                        console.log(`Rate limited. Retrying in ${delay / 1000}s...`);
+                        await sleep(delay);
+                        delay *= 2; 
+                        continue;
+                    }
+                    
+                    const errorBody = await response.json().catch(() => ({ error: { message: "Could not parse error response." }}));
+                    throw new Error(errorBody.error?.message || `API Error: ${response.statusText}`);
+
+                } catch (error) {
+                    console.log(`Attempt ${i + 1} failed for ${url}.`);
+                    if (i < retries - 1) {
+                        await sleep(delay);
+                        delay *= 2;
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+            throw new Error("API call failed after all retries.");
+        }
+
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            resultImageContainer.classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
