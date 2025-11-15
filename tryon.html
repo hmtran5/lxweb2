@@ -12,7 +12,7 @@
         body {
             font-family: 'Inter', sans-serif;
             /* Set the new background image permanently */
-            background-image: url('1761105400907-4b09be2e-0f86-4789-8672-1699e0b96cca_2.jpg');
+            background-image: url('1761105400907-4b09be2e-0f86-4T89-8672-1699e0b96cca_2.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -101,12 +101,18 @@
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
         }
+        /* API Key Input Style */
+        #apiKeyInput::placeholder {
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-8 relative">
+            <!-- Removed API Key Input Field -->
+
             <!-- Updated text color to match the new background theme -->
             <h1 class="text-4xl sm:text-5xl font-bold text-green-900 header-text">AI Nail Art Try-On</h1>
             <p class="mt-2 text-lg text-gray-700 max-w-2xl mx-auto header-text">Upload a picture of your hand and a model's hand to see the nail art magically applied!</p>
@@ -295,7 +301,7 @@
         const temperatureValue = document.getElementById('temperatureValue');
         const topPSlider = document.getElementById('topP');
         const topPValue = document.getElementById('topPValue');
-        // const bgUploadInput = document.getElementById('bgUpload'); // Removed
+        // const apiKeyInput = document.getElementById('apiKeyInput'); // Removed
 
         let userHandDataUri = null;
         let modelHandDataUri = null;
@@ -303,8 +309,6 @@
         let selectedNailLength = 'medium long'; // Default
         let temperature = 0.4;
         let topP = 0.9;
-        
-        // Removed the background upload event listener
         
         const updateModelPreview = async () => {
             // Only proceed if both images have been uploaded
@@ -506,6 +510,13 @@
 
 
         generateBtn.addEventListener('click', async () => {
+            // const apiKey = apiKeyInput.value; // Removed
+            // if (!apiKey) { // Removed
+            //     showError('Please enter your Google API Key at the top of the page to proceed.');
+            //     apiKeyInput.focus();
+            //     return;
+            // }
+
             if (!userHandDataUri || !modelHandDataUri) {
                 showError('Please upload both images before generating.');
                 return;
@@ -520,7 +531,7 @@
             try {
                 // Step 1: Clean and trim nails
                 loadingText.textContent = 'Step 1: Preparing your nails...';
-                const cleanedHandDataUri = await cleanAndTrimNails(userHandDataUri);
+                const cleanedHandDataUri = await cleanAndTrimNails(userHandDataUri); // Removed apiKey
 
                 // Step 2: Apply the new style
                 loadingText.textContent = 'Step 2: Applying the new style...';
@@ -534,7 +545,7 @@
                 const targetHeight = userImage.height;
 
                 const paddedModelHandDataUri = await resizeAndPadImage(modelHandDataUri, targetWidth, targetHeight);
-                await applyNailStyle(cleanedHandDataUri, paddedModelHandDataUri);
+                await applyNailStyle(cleanedHandDataUri, paddedModelHandDataUri); // Removed apiKey
 
             } catch (err) {
                 console.error('API call or image processing failed:', err);
@@ -552,7 +563,7 @@
         });
         
         async function cleanAndTrimNails(userHandData) {
-            const apiKey = "AIzaSyACnxdrhx7jdPAxoOsj0ER_1MKzWxk9ec0";
+            const apiKey = "AIzaSyC9dNa3RYV0OWZiI0yqVEZepRyz5JFa-GI"; // Re-added hardcoded key
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
             const userImagePart = { inlineData: { mimeType: userHandData.match(/:(.*?);/)[1], data: userHandData.split(',')[1] } };
             
@@ -583,7 +594,7 @@
 
 
         async function applyNailStyle(userHandData, modelHandData) {
-            const apiKey = "AIzaSyACnxdrhx7jdPAxoOsj0ER_1MKzWxk9ec0";
+            const apiKey = "AIzaSyC9dNa3RYV0OWZiI0yqVEZepRyz5JFa-GI"; // Re-added hardcoded key
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
 
             const userImagePart = { inlineData: { mimeType: userHandData.match(/:(.*?);/)[1], data: userHandData.split(',')[1] } };
