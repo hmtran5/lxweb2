@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nail Art Studio</title>
+    <!-- 1. Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A simple spinning loader */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #ec4899; /* Pink */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-pink-50 font-sans antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-bold text-pink-600">AI Nail Art Studio</h1>
+            <p class="text-lg md:text-xl text-gray-600 mt-2">Design your dream nails with AI</p>
+        </header>
+
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                
+                <!-- Column 1: Controls -->
+                <div class="flex flex-col space-y-6">
+                    <!-- Step 1: Text Prompt -->
+                    <div>
+                        <label for="prompt-input" class="block text-sm font-medium text-gray-700 mb-2 font-semibold">Step 1: Describe your overall design</label>
+                        <textarea id="prompt-input" rows="3" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500" placeholder="e.g., 'Soft pink chrome background with...'"></textarea>
+                    </div>
+
+                    <!-- Step 2: Upload Inspo -->
+                    <div>
+                        <label for="image-upload" class="block text-sm font-medium text-gray-700 mb-2 font-semibold">Step 2: Upload an 'inspo' image</label>
+                        <input id="image-upload" type="file" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-pink-100 file:text-pink-700
+                            hover:file:bg-pink-200 cursor-pointer"/>
+                    </div>
+                    
+                    <!-- Inspo Preview -->
+                    <div id="image-preview-container" class="hidden">
+                        <span class="block text-xs font-medium text-gray-500 mb-2">Inspo Preview:</span>
+                        <img id="image-preview" src="" alt="Image preview" class="w-full rounded-lg object-contain h-48 border border-gray-200 p-1">
+                    </div>
+
+                    <!-- Step 3: Generate Elements Button -->
+                    <button id="generate-elements-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center space-x-2" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wand-2"><path d="M11 3v5l-2 1.5-2-1.5V3Z"/><path d="m19 15-4-4"/><path d="m15 19-4-4"/><path d="M11 13v5l-2 1.5-2-1.5v-5Z"/><path d="M21 3v5l-2 1.5-2-1.5V3Z"/><path d="M3 3v5l2 1.5L7 8V3Z"/><path d="M7 13v5l2 1.5 2-1.5v-5Z"/><path d="M15 3v5l2 1.5 2-1.5V3Z"/></svg>
+                        <span>Generate Design Elements</span>
+                    </button>
+                    
+                    <!-- Elements Result Container -->
+                    <div id="elements-result-container" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300">
+                        <!-- Elements Loading -->
+                        <div id="elements-loading-spinner" class="hidden text-center">
+                            <div class="loader mx-auto"></div>
+                            <p class="text-gray-600 mt-3">Extracting design elements...</p>
+                        </div>
+                        <!-- Elements Image -->
+                        <div id="elements-result-image-container" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Generated Elements:</label>
+                            <img id="elements-result-image" src="" alt="Generated design elements" class="w-full rounded-lg shadow-sm border">
+                        </div>
+                        <!-- Elements Error -->
+                        <div id="elements-error-message" class.bind="hidden text-center text-red-600 bg-red-100 p-3 rounded-lg">
+                            <p id="elements-error-text"></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Step 4: Generate Nail Set Button -->
+                    <button id="generate-nails-btn" class="w-full bg-pink-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-pink-700 transition-colors duration-200 flex items-center justify-center space-x-2" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.96 5.23A2.4 2.4 0 0 0 7.5 3 2.4 2.4 0 0 0 5.04 5.23M3 7.5A2.4 2.4 0 0 0 .77 9.96 2.4 2.4 0 0 0 3 12.42M5.04 18.77A2.4 2.4 0 0 0 7.5 21a2.4 2.4 0 0 0 2.46-2.23M18.77 18.96A2.4 2.4 0 0 0 21 21.42a2.4 2.4 0 0 0 2.23-2.46M21 7.5A2.4 2.4 0 0 0 18.77 5.04 2.4 2.4 0 0 0 16.5 7.5M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
+                        <span>Step 3: Generate Final Nail Set</span>
+                    </button>
+                </div>
+
+                <!-- Column 2: Final Result -->
+                <div class="flex flex-col items-center justify-center bg-gray-50 p-4 rounded-lg border-2 border-dashed border-gray-300 min-h-[300px] md:min-h-full">
+                    <!-- Final Loading Indicator -->
+                    <div id="final-loading-spinner" class="hidden text-center">
+                        <div class="loader mx-auto"></div>
+                        <p class="text-gray-600 mt-3">Generating your final nail set...</p>
+                    </div>
+
+                    <!-- Final Result Image -->
+                    <div id="final-result-image-container" class="hidden w-full">
+                        <img id="final-result-image" src="" alt="Generated nail art set" class="w-full rounded-lg shadow-md">
+                    </div>
+
+                    <!-- Placeholder -->
+                    <div id="final-placeholder" class="text-center text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-down mx-auto text-gray-400"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L13 16Z"/><path d="m14 21 3-3h3a2 2 0 0 0 2-2v-3"/><path d="M18 21v-6"/><path d="m15 18 3 3 3-3"/><circle cx="9" cy="9" r="2"/></svg>
+                        <p class="mt-2">Your final AI-generated nail set will appear here.</p>
+                    </div>
+
+                    <!-- Final Error Message -->
+                    <div id="final-error-message" class="hidden text-center text-red-600 bg-red-100 p-4 rounded-lg">
+                        <p id="final-error-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. API Key -->
+    <script>
+        const apiKey = "AIzaSyC9dNa3RYV0OWZiI0yqVEZepRyz5JFa-GI";
+    </script>
+    
+    <!-- 2. Main Application Logic -->
+    <script type_model="text/javascript">
+        // Get DOM elements
+        const promptInput = document.getElementById('prompt-input');
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        
+        const generateElementsBtn = document.getElementById('generate-elements-btn');
+        const elementsResultContainer = document.getElementById('elements-result-container');
+        const elementsLoadingSpinner = document.getElementById('elements-loading-spinner');
+        const elementsResultImageContainer = document.getElementById('elements-result-image-container');
+        const elementsResultImage = document.getElementById('elements-result-image');
+        const elementsErrorMessage = document.getElementById('elements-error-message');
+        const elementsErrorText = document.getElementById('elements-error-text');
+
+        const generateNailsBtn = document.getElementById('generate-nails-btn');
+        const finalLoadingSpinner = document.getElementById('final-loading-spinner');
+        const finalResultImageContainer = document.getElementById('final-result-image-container');
+        const finalResultImage = document.getElementById('final-result-image');
+        const finalPlaceholder = document.getElementById('final-placeholder');
+        const finalErrorMessage = document.getElementById('final-error-message');
+        const finalErrorText = document.getElementById('final-error-text');
+
+        // State variables
+        let uploadedImage = null;
+        let generatedElementsImage = null;
+
+        // Handle image upload
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Read the file as Base64
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64Data = e.target.result.split(',')[1];
+                    uploadedImage = {
+                        mimeType: file.type,
+                        data: base64Data
+                    };
+                    
+                    // Show preview
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                    generateElementsBtn.disabled = false; // Enable Step 2 button
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add event listeners for the two buttons
+        generateElementsBtn.addEventListener('click', generateElements);
+        generateNailsBtn.addEventListener('click', generateFinalNailSet);
+
+        // --- STAGE 1: GENERATE ELEMENTS ---
+        async function generateElements() {
+            if (!uploadedImage) {
+                showElementsError("Please upload an 'inspo' image first.");
+                return;
+            }
+
+            setElementsLoading(true);
+            generatedElementsImage = null; // Clear previous elements
+            generateNailsBtn.disabled = true; // Disable final button until new elements are made
+
+            // Prompt for generating the "sticker sheet" / cutouts
+            const finalPrompt = `Analyze the uploaded images to identify the main subject. Generate a variety of small high-resolution design elements cut out from the subject. This collection should include Many Many clear cutouts of the subject's face/head and body. 
+
+Output Specifications:
+Layout: Arrange all elements neatly on a 3x4 inch sheet.
+Cropping & Edges: Each element must be precisely cropped to its own edges. Do NOT add any surrounding white border, outline, padding, or cut-line
+Background: The overall sheet background must be fully transparent (PNG format).
+Format: Generate a clean, flat, 2D digital file only. Avoid all mockups, shadows, or 3D scenes.`;
+
+            // Construct API Payload
+            const parts = [
+                { text: finalPrompt },
+                {
+                    inlineData: {
+                        mimeType: uploadedImage.mimeType,
+                        data: uploadedImage.data
+                    }
+                }
+            ];
+
+            try {
+                const base64Data = await callGeminiApi(parts);
+                
+                // Save and display the generated elements image
+                generatedElementsImage = {
+                    mimeType: 'image/png', // API returns PNG
+                    data: base64Data
+                };
+                elementsResultImage.src = `data:image/png;base64,${base64Data}`;
+                elementsResultImageContainer.classList.remove('hidden');
+                elementsResultContainer.classList.remove('hidden');
+                generateNailsBtn.disabled = false; // Enable final step
+                setElementsLoading(false);
+
+            } catch (error) {
+                console.error("Error in generateElements:", error);
+                showElementsError(`Error: ${error.message}. Please try again.`);
+                setElementsLoading(false);
+            }
+        }
+
+        // --- STAGE 2: GENERATE FINAL NAIL SET ---
+        async function generateFinalNailSet() {
+            const userPrompt = promptInput.value;
+            
+            if (!generatedElementsImage) {
+                showFinalError("Please generate the design elements first (Step 2).");
+                return;
+            }
+            if (!userPrompt) {
+                showFinalError("Please describe your overall design (Step 1).");
+                return;
+            }
+
+            setFinalLoading(true);
+
+            // Prompt for creating the nail set from the "elements" image
+            const finalPrompt = `A high-quality product photo of a set of 10 matching press-on nails, arranged neatly on a plain, minimalist white background.
+The nail art design must take the small, individual visual elements from the uploaded grid image and place them directly onto the nails, like stickers.
+Distribute these elements consistently and repeatedly across all 10 individual press-on nails. Each nail should clearly feature these elements.
+Use this text as guidance for the *background* of the nails: ${userPrompt}`;
+
+            // Construct API Payload
+            const parts = [
+                { text: finalPrompt },
+                {
+                    inlineData: {
+                        mimeType: generatedElementsImage.mimeType,
+                        data: generatedElementsImage.data
+                    }
+                }
+            ];
+
+            try {
+                const base64Data = await callGeminiApi(parts);
+                
+                // Display the final result
+                finalResultImage.src = `data:image/png;base64,${base64Data}`;
+                finalResultImageContainer.classList.remove('hidden');
+                setFinalLoading(false);
+
+            } catch (error) {
+                console.error("Error in generateFinalNailSet:", error);
+                showFinalError(`Error: ${error.message}. Please try again.`);
+                setFinalLoading(false);
+            }
+        }
+
+        // --- SHARED API FUNCTION ---
+        async function callGeminiApi(parts) {
+            const model = "gemini-2.5-flash-image";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [
+                    { parts: parts }
+                ],
+                generationConfig: {
+                    responseModalities: ['IMAGE'] 
+                }
+            };
+            
+            const response = await fetchWithBackoff(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                console.error("API Error Response:", errorBody);
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+            if (!base64Data) {
+                console.error("API Response OK, but no image data:", result);
+                throw new Error("No image data found in the API response.");
+            }
+            
+            return base64Data;
+        }
+
+        // --- Helper Functions ---
+
+        /**
+         * Fetches a resource with exponential backoff.
+         */
+        async function fetchWithBackoff(url, options, retries = 3, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (response.status === 429 || response.status >= 500) { // Throttling or server error
+                    if (retries > 0) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return fetchWithBackoff(url, options, retries - 1, delay * 2);
+                    } else {
+                        throw new Error("Max retries reached. API may be busy.");
+                    }
+                }
+                return response;
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithBackoff(url, options, retries - 1, delay * 2);
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        /**
+         * Updates the UI for the Elements loading state.
+         */
+        function setElementsLoading(isLoading) {
+            elementsErrorMessage.classList.add('hidden');
+            elementsResultContainer.classList.remove('hidden');
+            if (isLoading) {
+                elementsLoadingSpinner.classList.remove('hidden');
+                elementsResultImageContainer.classList.add('hidden');
+                generateElementsBtn.disabled = true;
+                generateElementsBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                elementsLoadingSpinner.classList.add('hidden');
+                generateElementsBtn.disabled = false;
+                generateElementsBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        /**
+         * Updates the UI for the Final Nail Set loading state.
+         */
+        function setFinalLoading(isLoading) {
+            finalErrorMessage.classList.add('hidden');
+            if (isLoading) {
+                finalLoadingSpinner.classList.remove('hidden');
+                finalPlaceholder.classList.add('hidden');
+                finalResultImageContainer.classList.add('hidden');
+                generateNailsBtn.disabled = true;
+                generateNailsBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                finalLoadingSpinner.classList.add('hidden');
+                generateNailsBtn.disabled = false;
+                generateNailsBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        /**
+         * Displays an error message in the Elements UI.
+         */
+        function showElementsError(message) {
+            elementsErrorText.textContent = message;
+            elementsErrorMessage.classList.remove('hidden');
+            elementsResultImageContainer.classList.add('hidden');
+        }
+
+        /**
+         * Displays an error message in the Final Nail Set UI.
+         */
+        function showFinalError(message) {
+            finalErrorText.textContent = message;
+            finalErrorMessage.classList.remove('hidden');
+            finalPlaceholder.classList.add('hidden');
+            finalResultImageContainer.classList.add('hidden');
+        }
+
+    </script>
+
+</body>
+</html>
