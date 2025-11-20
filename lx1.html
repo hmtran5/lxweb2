@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Nail Spa</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-green: #558b63;
+            --dark-bg: #1a1a1a;
+            --light-bg: #f4f6f7;
+            --text-main: #333333;
+            --text-light: #ffffff;
+            --font-handwriting: 'Cookie', cursive;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Lato', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-sans); color: var(--text-main); line-height: 1.6; background-color: #fff; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { display: block; max-width: 100%; }
+
+        /* --- LAYOUT UTILITIES --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+        .btn:hover { background-color: #447050; }
+        .btn:active { transform: scale(0.98); }
+
+        .section-title-hand { font-family: var(--font-handwriting); font-size: 3.5rem; text-align: center; margin-bottom: 1rem; }
+        .section-title-serif { font-family: var(--font-serif); font-size: 2.5rem; text-align: center; color: #2c3e50; font-weight: 700; letter-spacing: 1px; margin-bottom: 2rem; text-transform: uppercase; }
+
+        /* --- HEADER & HERO --- */
+        .top-bar { 
+            background-color: #111; 
+            color: #82e096;    /* Brighter green */
+            text-align: center; 
+            padding: 12px 0; 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+        }
+
+        .hero-image-area {
+            width: 100%;
+            height: 550px; 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            flex-direction: column; 
+            justify-content: flex-end; /* Keeps Book Now at bottom */
+            align-items: center;
+            background-color: #ccc; 
+            transition: background-image 0.5s ease;
+        }
+
+        /* Logo Box - Moved to TOP */
+        .logo-box {
+            /* Removed background, border, shadow for transparency */
+            width: 200px;  
+            height: 200px;
+            position: absolute; /* Absolute to place relative to hero container */
+            top: 20px;          /* Placed near the top black bar */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            overflow: hidden;
+        }
+        
+        .logo-box img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+            /* Add drop shadow to help logo stand out on background if needed */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Compact CTA Section ("Whiteboard") */
+        .cta-section { 
+            text-align: center; 
+            
+            /* Whiteboard Styling */
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            padding: 25px 40px;      /* Padding around text/button */
+            border-radius: 4px;      /* Soft corners */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+            margin-bottom: 40px;     /* Lift it off the very bottom edge */
+            
+            /* Size constraints */
+            width: auto;
+            max-width: 90%;          /* Responsive width */
+            display: inline-block;   /* Fits width to content */
+
+            position: relative;
+            z-index: 10;
+        }
+        
+        .cta-text { 
+            font-size: 1.4rem; 
+            margin-bottom: 15px; 
+            font-weight: 700; 
+            color: #333; /* Dark text on white background */
+            text-shadow: none;
+        }
+        
+        .cta-section .btn {
+            background-color: var(--primary-green);
+            border: none;
+            color: white;
+        }
+        .cta-section .btn:hover {
+            background-color: #447050;
+        }
+
+        /* --- MISSION SECTION --- */
+        .mission-section { background-color: var(--dark-bg); color: white; padding: 60px 0; }
+        .mission-title { font-family: var(--font-handwriting); font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: white; }
+        
+        .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        
+        .mission-img-container {
+            position: relative;
+            width: 100%;
+            height: 350px; 
+            overflow: hidden;
+            border-radius: 2px;
+            background-color: #333;
+        }
+        .mission-slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .mission-slide.active { opacity: 1; }
+
+        .mission-content h3 { font-family: var(--font-sans); font-size: 1.5rem; margin-bottom: 20px; font-weight: 400; }
+        .mission-content p { color: #ccc; font-size: 1rem; line-height: 1.8; }
+
+        /* --- GALLERY (CAROUSEL STYLE) --- */
+        .gallery-section { padding: 60px 0; background-color: #f9f9f9; border-bottom: 1px solid #eee; overflow: hidden; }
+        .gallery-title { color: var(--primary-green); font-family: var(--font-handwriting); text-align: center; font-size: 3rem; padding: 0 20px; margin-bottom: 40px; }
+        
+        .gallery-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* 3D Carousel Container */
+        .gallery-3d-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            perspective: 1000px; 
+            margin-bottom: 20px;
+        }
+
+        .gallery-card {
+            position: absolute;
+            top: 5%;
+            height: 90%;
+            width: 60%; 
+            left: 50%;
+            background: transparent; 
+            box-shadow: none;        
+            transition: all 0.5s ease-in-out;
+            opacity: 0; 
+            transform: translateX(-50%) scale(0.8);
+            z-index: 0;
+            cursor: pointer;
+        }
+        
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            display: block;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); 
+        }
+
+        /* Active State (Center) */
+        .gallery-card.active {
+            opacity: 1;
+            z-index: 10;
+            transform: translateX(-50%) scale(1);
+            filter: none;
+            cursor: default;
+        }
+
+        /* Previous State (Left) */
+        .gallery-card.prev {
+            opacity: 0.5;
+            z-index: 5;
+            transform: translateX(-125%) scale(0.85); 
+            filter: grayscale(100%);
+        }
+        
+        /* Next State (Right) */
+        .gallery-card.next {
+            opacity: 0.5;
+            z-index: 5;
+            transform: translateX(25%) scale(0.85); 
+            filter: grayscale(100%);
+        }
+
+        /* Slideshow Arrows */
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.8);
+            color: var(--primary-green);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .gallery-arrow:hover { background-color: var(--primary-green); color: white; }
+        .gallery-arrow.left { left: 20px; }
+        .gallery-arrow.right { right: 20px; }
+
+        /* Thumbnails below */
+        .gallery-thumbs {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .gallery-thumb {
+            width: 100px;
+            height: 80px;
+            flex-shrink: 0;
+            cursor: pointer;
+            overflow: hidden;
+            opacity: 0.6;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            background-color: #ddd;
+        }
+        .gallery-thumb:hover, .gallery-thumb.active { opacity: 1; border-color: var(--primary-green); transform: scale(1.05); }
+        .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+
+        /* --- WELCOME SECTION --- */
+        .welcome-section { background-color: #fff; padding: 80px 0; }
+        
+        .welcome-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Split 50/50 */
+            gap: 60px;
+            align-items: center;
+        }
+
+        .welcome-img-banner { 
+            width: 100%; 
+            height: 100%; 
+            min-height: 450px; 
+            object-fit: cover; 
+            margin-bottom: 0; 
+            background-color: #ddd; 
+            border-radius: 4px;
+        }
+        
+        .welcome-content { padding-right: 20px; }
+        .welcome-content h2 { font-family: var(--font-handwriting); font-size: 3.5rem; margin-bottom: 20px; color: #111; line-height: 1.2; }
+
+        /* --- MENU SECTION (IMAGE STACK) --- */
+        .menu-section { padding: 60px 0; background: linear-gradient(to bottom, #fff 0%, #f4fcf6 100%); }
+        .menu-header { text-align: center; margin-bottom: 40px; }
+        
+        .menu-image-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .menu-image-stack img {
+            width: 100%;
+            max-width: 800px; /* Good size for menu pages */
+            height: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+
+        /* --- CONTACT & FOOTER --- */
+        .contact-section { background-color: var(--light-bg); padding: 80px 0; text-align: center; }
+        .contact-title { font-family: var(--font-handwriting); color: var(--primary-green); font-size: 4rem; margin-bottom: 40px; }
+        
+        /* Unified Contact Info Styles */
+        .contact-info { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            color: #444; 
+            font-family: var(--font-sans); /* Enforce same font family */
+            font-size: 1.2rem; 
+            line-height: 1.6;
+        }
+        
+        .contact-info strong {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* Make sure all children inherit cleanly */
+        .contact-info div, 
+        .contact-info p, 
+        .contact-info span,
+        .address-block, 
+        .hours-block {
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .address-block { margin-bottom: 40px; }
+        .address-block h3 { 
+            font-size: 1.4em; 
+            font-weight: 400; 
+            margin-bottom: 10px; 
+            color: #222;
+        }
+        
+        .phone-text { 
+            color: var(--primary-green); 
+            font-size: 1.6em; 
+            margin: 20px 0; 
+            display: block; 
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .hours-block { margin-top: 40px; margin-bottom: 40px; }
+        .hours-title { 
+            font-size: 1.3em; 
+            margin-bottom: 15px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #333;
+            font-weight: 700;
+        }
+
+        .hours-list { text-align: left; display: inline-block; }
+        .hours-item { 
+            display: flex; 
+            justify-content: space-between; 
+            width: 350px; 
+            margin-bottom: 10px; 
+            font-family: inherit; /* Ensure it inherits Lato */
+            font-size: 1em; 
+            color: #555; 
+        }
+        .hours-item.active { font-weight: 700; color: #222; }
+
+        footer { background-color: black; color: #999; text-align: center; padding: 20px; font-size: 0.9rem; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-image-area { height: 400px; } 
+            /* Adjust logo for mobile */
+            .logo-box { top: 10px; width: 150px; height: 150px; }
+            
+            .mission-grid, .welcome-grid { grid-template-columns: 1fr; } 
+            .gallery-3d-container { height: 300px; }
+            .gallery-card { width: 80%; }
+            .gallery-card.prev { transform: translateX(-120%) scale(0.8); }
+            .gallery-card.next { transform: translateX(20%) scale(0.8); }
+            .section-title-hand { font-size: 2.5rem; }
+            .container { padding: 0 15px; }
+            .welcome-img-banner { min-height: 300px; margin-bottom: 30px; } 
+            .contact-title { font-size: 3rem; }
+            .contact-info { font-size: 1rem; } 
+            .phone-text { font-size: 1.5em; }
+            .hours-item { width: 100%; font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar" id="topPhone">504-345-2142</div>
+
+    <!-- HERO SECTION -->
+    <header>
+        <div class="hero-image-area" id="heroBg">
+            <!-- IMAGE LOGO BOX (Moved to Top) -->
+            <div class="logo-box">
+                <img id="logoImg" src="" alt="Logo">
+            </div>
+            
+            <!-- CTA Section (At Bottom) -->
+            <div class="cta-section">
+                <div class="cta-text">Elevate Your Nail Experience</div>
+                <button class="btn" onclick="document.querySelector('.contact-section').scrollIntoView({behavior: 'smooth'})">Book Now</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MISSION SECTION -->
+    <section class="mission-section">
+        <div class="container">
+            <h2 class="mission-title">Discover the Elegance of Luxury Nail Spa</h2>
+            <div class="mission-grid">
+                <div class="mission-img-container" id="missionSlider">
+                    <!-- Images injected by JS -->
+                </div>
+                <div class="mission-content">
+                    <h3>Our Mission</h3>
+                    <p id="missionText">At Luxury Nail Spa, our mission is to provide an unparalleled nail care experience that combines relaxation with beauty. We are dedicated to using high-quality products that ensure your nails look stunning and stay healthy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY SECTION (CAROUSEL) -->
+    <section class="gallery-section">
+        <h2 class="gallery-title">Experience elegance and artistry</h2>
+        <div class="container">
+            <div class="gallery-wrapper">
+                <button class="gallery-arrow left" id="galleryPrev">&#10094;</button>
+                
+                <div class="gallery-3d-container" id="gallery3DContainer">
+                    <!-- Cards injected by JS -->
+                </div>
+                
+                <button class="gallery-arrow right" id="galleryNext">&#10095;</button>
+                
+                <div class="gallery-thumbs" id="galleryThumbs"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WELCOME SECTION -->
+    <section class="welcome-section">
+        <div class="container">
+            <div class="welcome-grid">
+                <div class="welcome-img-col">
+                    <img id="welcomeImage" src="" alt="Woman at Spa" class="welcome-img-banner">
+                </div>
+                <div class="welcome-content">
+                    <p style="text-transform: uppercase; color: #777; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px;">Hello</p>
+                    <h2>Welcome to Luxury Nail Spa</h2>
+                    <p style="color: #555; margin-bottom: 30px; font-size: 1.1rem; line-height: 1.8;" id="welcomeText">Indulge in luxurious nail care services. Our skilled technicians provide top-notch services in a relaxing atmosphere. We are dedicated to sanitation and professional care.</p>
+                    <button class="btn">Find out more</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU / PRICE LIST -->
+    <section class="menu-section">
+        <div class="container">
+            <div class="menu-header">
+                <h2 class="section-title-hand">MENU / PRICE LIST</h2>
+            </div>
+
+            <div class="menu-image-stack" id="menuContainer">
+                <!-- Menu Images injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-section">
+        <div class="container">
+            <h2 class="contact-title">Contact Us</h2>
+            <div class="contact-info">
+                <div style="margin-bottom: 30px;">
+                    <strong>Cancellation Policy</strong><br>
+                    We ask that you give us 24 hours notice if you need to cancel your appointment.
+                </div>
+
+                <div class="address-block">
+                    <h3>Luxury Nail Spa</h3>
+                    <p id="addressText">1001 Elysian Fields Ave Ste B, New Orleans, LA 70117</p>
+                    <a href="tel:504-345-2142" class="phone-text" id="phoneLink">504-345-2142</a>
+                </div>
+
+                <div class="hours-block">
+                    <div class="hours-title">Business Hours</div>
+                    <div class="hours-list">
+                        <div class="hours-item"><span>Mon</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Tue</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Wed</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Thu</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Fri</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Sat</span> <span>09:30 am – 06:00 pm</span></div>
+                        <div class="hours-item"><span>Sun</span> <span>12:00 pm – 05:00 pm</span></div>
+                    </div>
+                </div>
+
+                <!-- Updated Get Directions Button -->
+                <a href="https://www.google.com/maps/dir//1001+Elysian+Fields+Ave+Ste+B,+New+Orleans,+LA+70117" target="_blank" class="btn">Get directions</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>Copyright © 2025 Luxury Nail Spa - All Rights Reserved.</footer>
+
+    <!-- ========================================== -->
+    <!--         CONFIGURATION & SCRIPTS            -->
+    <!-- ========================================== -->
+    <script>
+        // ---------------------------------------------------------
+        // 1. USER CONFIGURATION
+        // ---------------------------------------------------------
+        const WEBSITE_CONTENT = {
+            // LOGO IMAGE URL
+            logoUrl: "images/logo.png", 
+
+            // BACKGROUNDS
+            heroBackground: "images/top.webp",
+            welcomeImage: "images/hello.webp",
+
+            // SLIDESHOWS & GALLERY
+            missionSlides: [
+                "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=2070&auto=format&fit=crop",
+                "images/mission1.webp",
+                "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2069&auto=format&fit=crop"
+            ],
+            galleryImages: [
+                "images/g1.webp",
+                "images/g2.webp",
+                "images/g3.webp",
+                "images/g4.webp",
+                "images/g5.webp",
+                "images/g6.webp",
+                "images/chan.jpg",
+            ],
+            
+            // MENU IMAGES (Add your menu pages here)
+            menuImages: [
+                "images/menu1.webp",
+                "images/menu2.webp",
+                "images/menu3.webp",
+                "images/menu4.webp",
+                "images/menu5.webp",  
+            ],
+
+            phoneNumber: "504-345-2142"
+        };
+
+        // ---------------------------------------------------------
+        // 2. APPLICATION LOGIC
+        // ---------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            // Static Content
+            document.getElementById('heroBg').style.backgroundImage = `url('${WEBSITE_CONTENT.heroBackground}')`;
+            document.getElementById('welcomeImage').src = WEBSITE_CONTENT.welcomeImage;
+            document.getElementById('logoImg').src = WEBSITE_CONTENT.logoUrl;
+            document.querySelectorAll('#topPhone, #phoneLink').forEach(el => el.innerText = WEBSITE_CONTENT.phoneNumber);
+            document.getElementById('phoneLink').href = `tel:${WEBSITE_CONTENT.phoneNumber}`;
+
+            // Mission Slideshow
+            const missionContainer = document.getElementById('missionSlider');
+            WEBSITE_CONTENT.missionSlides.forEach((url, index) => {
+                if(!url) return;
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = `mission-slide ${index === 0 ? 'active' : ''}`;
+                missionContainer.appendChild(img);
+            });
+            let missionIndex = 0;
+            const missionImgs = missionContainer.querySelectorAll('.mission-slide');
+            if (missionImgs.length > 1) setInterval(() => {
+                missionImgs[missionIndex].classList.remove('active');
+                missionIndex = (missionIndex + 1) % missionImgs.length;
+                missionImgs[missionIndex].classList.add('active');
+            }, 3500);
+
+            // NEW MENU IMAGE LOGIC
+            const menuContainer = document.getElementById('menuContainer');
+            WEBSITE_CONTENT.menuImages.forEach(url => {
+                if(!url) return;
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = "Menu Page";
+                menuContainer.appendChild(img);
+            });
+
+            // --- NEW CAROUSEL LOGIC ---
+            const galleryContainer = document.getElementById('gallery3DContainer');
+            const galleryThumbs = document.getElementById('galleryThumbs');
+            const validGalleryImages = WEBSITE_CONTENT.galleryImages.filter(u => u);
+            let currentGalleryIndex = 0;
+
+            // 1. Create Card Elements
+            validGalleryImages.forEach((url, index) => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                const img = document.createElement('img');
+                img.src = url;
+                card.appendChild(img);
+                
+                // Clicking a side card moves to it
+                card.onclick = () => updateCarousel(index);
+                
+                galleryContainer.appendChild(card);
+
+                // Create Thumb
+                const thumb = document.createElement('div');
+                thumb.className = 'gallery-thumb';
+                const tImg = document.createElement('img'); tImg.src = url;
+                thumb.appendChild(tImg);
+                thumb.onclick = () => updateCarousel(index);
+                galleryThumbs.appendChild(thumb);
+            });
+
+            const cards = galleryContainer.querySelectorAll('.gallery-card');
+            const thumbs = galleryThumbs.querySelectorAll('.gallery-thumb');
+
+            // 2. Update Positions
+            function updateCarousel(activeIndex) {
+                currentGalleryIndex = activeIndex;
+                
+                cards.forEach((card, i) => {
+                    // Reset classes
+                    card.className = 'gallery-card';
+                    
+                    if (i === activeIndex) {
+                        card.classList.add('active');
+                    } else {
+                        // Determine relative position (circular)
+                        const total = cards.length;
+                        
+                        const prevIndex = (activeIndex - 1 + total) % total;
+                        const nextIndex = (activeIndex + 1) % total;
+
+                        if (i === prevIndex) {
+                            card.classList.add('prev');
+                        } else if (i === nextIndex) {
+                            card.classList.add('next');
+                        } else {
+                            // Hidden or far back
+                            // card.style.opacity = 0; 
+                        }
+                    }
+                });
+
+                // Update thumbs highlight
+                thumbs.forEach((t, i) => {
+                    t.classList.toggle('active', i === activeIndex);
+                });
+            }
+
+            // Init
+            if (cards.length > 0) updateCarousel(0);
+
+            // Arrow Listeners
+            document.getElementById('galleryPrev').onclick = () => {
+                let newIndex = (currentGalleryIndex - 1 + cards.length) % cards.length;
+                updateCarousel(newIndex);
+            };
+            document.getElementById('galleryNext').onclick = () => {
+                let newIndex = (currentGalleryIndex + 1) % cards.length;
+                updateCarousel(newIndex);
+            };
+        });
+    </script>
+</body>
+</html>
