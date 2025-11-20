@@ -427,7 +427,7 @@
             <!-- CTA Section (At Bottom) -->
             <div class="cta-section">
                 <div class="cta-text">Elevate Your Nail Experience</div>
-                <button class="btn" onclick="document.querySelector('.contact-section').scrollIntoView({behavior: 'smooth'})">Book Now</button>
+                <a id="bookNowBtn" href="#" class="btn">Book Now</a>
             </div>
         </div>
     </header>
@@ -477,7 +477,8 @@
                     <p style="text-transform: uppercase; color: #777; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px;">Hello</p>
                     <h2>Welcome to Luxury Nail Spa</h2>
                     <p style="color: #555; margin-bottom: 30px; font-size: 1.1rem; line-height: 1.8;" id="welcomeText">Indulge in luxurious nail care services. Our skilled technicians provide top-notch services in a relaxing atmosphere. We are dedicated to sanitation and professional care.</p>
-                    <button class="btn">Find out more</button>
+                    <!-- Updated Button with Scroll Logic -->
+                    <button class="btn" onclick="document.querySelector('.contact-section').scrollIntoView({behavior: 'smooth'})">Find out more</button>
                 </div>
             </div>
         </div>
@@ -586,6 +587,12 @@
             document.getElementById('logoImg').src = WEBSITE_CONTENT.logoUrl;
             document.querySelectorAll('#topPhone, #phoneLink').forEach(el => el.innerText = WEBSITE_CONTENT.phoneNumber);
             document.getElementById('phoneLink').href = `tel:${WEBSITE_CONTENT.phoneNumber}`;
+
+            // Update Book Now Button
+            const bookBtn = document.getElementById('bookNowBtn');
+            if (bookBtn) {
+                bookBtn.href = `tel:${WEBSITE_CONTENT.phoneNumber}`;
+            }
 
             // Mission Slideshow
             const missionContainer = document.getElementById('missionSlider');
