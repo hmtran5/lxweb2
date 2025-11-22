@@ -258,7 +258,7 @@
             filter: grayscale(100%);
         }
 
-        /* Slideshow Arrows (Hidden by default on desktop, show on hover) */
+        /* Slideshow Arrows */
         .gallery-arrow {
             position: absolute;
             top: 50%;
@@ -281,11 +281,8 @@
             opacity: 0; /* Start hidden */
         }
         
-        /* Show arrows on hover (Desktop) */
-        .gallery-wrapper:hover .gallery-arrow {
-            opacity: 1;
-        }
-
+        /* Show arrows on hover */
+        .gallery-wrapper:hover .gallery-arrow { opacity: 1; }
         .gallery-arrow:hover { background-color: var(--primary-green); color: white; }
         .gallery-arrow.left { left: 20px; }
         .gallery-arrow.right { right: 20px; }
@@ -437,7 +434,81 @@
             border-radius: 4px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background-color: #ddd; /* Placeholder color while loading */
+            background-color: #ddd;
+        }
+
+        /* --- MAP SELECTION MODAL STYLES --- */
+        .maps-modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .maps-modal.show {
+            display: flex;
+        }
+
+        .maps-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .maps-modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5rem;
+            font-family: var(--font-sans);
+        }
+
+        .map-option-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+            border: 1px solid #eee;
+        }
+
+        .map-option-btn:active { transform: scale(0.97); }
+
+        .btn-google { background-color: #fff; color: #4285F4; border-color: #4285F4; }
+        .btn-apple { background-color: #000; color: #fff; border-color: #000; }
+        .btn-waze { background-color: #fff; color: #33CCFF; border-color: #33CCFF; }
+
+        .btn-cancel {
+            background: transparent;
+            color: #888;
+            margin-top: 10px;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
         footer { background-color: black; color: #999; text-align: center; padding: 15px; font-size: 0.8rem; }
@@ -475,6 +546,7 @@
                 transform: translateX(-50%) scale(1);
             } 
             
+            /* HIDE ARROWS ON MOBILE - User swipes instead */
             .gallery-arrow { display: none !important; }
 
             .section-title-hand { font-size: 2.2rem; }
@@ -604,7 +676,8 @@
                     </div>
                 </div>
 
-                <a href="https://www.google.com/maps/dir//1001+Elysian+Fields+Ave+Ste+B,+New+Orleans,+LA+70117" target="_blank" class="btn">Get directions</a>
+                <!-- Updated Get Directions Button (Triggers Modal) -->
+                <button onclick="openMapsModal()" class="btn">Get directions</button>
 
                 <!-- GOOGLE MAP IFRAME -->
                 <div class="map-container">
@@ -622,6 +695,23 @@
             </div>
         </div>
     </section>
+
+    <!-- MAP SELECTION POPUP MODAL -->
+    <div id="mapsModal" class="maps-modal">
+        <div class="maps-modal-content">
+            <h3>Choose Map App</h3>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=1001+Elysian+Fields+Ave+Ste+B,+New+Orleans,+LA+70117" target="_blank" class="map-option-btn btn-google">
+                Google Maps
+            </a>
+            <a href="http://maps.apple.com/?daddr=1001+Elysian+Fields+Ave+Ste+B,+New+Orleans,+LA+70117" target="_blank" class="map-option-btn btn-apple">
+                Apple Maps
+            </a>
+            <a href="https://waze.com/ul?ll=29.9725,-90.0565&navigate=yes" target="_blank" class="map-option-btn btn-waze">
+                Waze
+            </a>
+            <button class="btn-cancel" onclick="closeMapsModal()">Cancel</button>
+        </div>
+    </div>
 
     <footer>Copyright © 2025 Luxury Nail Spa - All Rights Reserved.</footer>
 
@@ -667,6 +757,22 @@
 
             phoneNumber: "504-345-2142"
         };
+
+        // --- MAP MODAL LOGIC ---
+        function openMapsModal() {
+            document.getElementById('mapsModal').classList.add('show');
+        }
+        function closeMapsModal() {
+            document.getElementById('mapsModal').classList.remove('show');
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('mapsModal');
+            if (event.target == modal) {
+                closeMapsModal();
+            }
+        }
 
         // ---------------------------------------------------------
         // 2. APPLICATION LOGIC
