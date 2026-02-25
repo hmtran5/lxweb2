@@ -2,35 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas Casino Blackjack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CLEOPATRA Casino Blackjack</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-color: #1a1a1a;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            touch-action: manipulation;
         }
         h1 {
             margin: 0 0 10px 0;
             color: #f1c40f;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
         }
         .hud {
             display: flex;
-            justify-content: space-between;
-            width: 800px;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
             margin-bottom: 10px;
             font-size: 20px;
             font-weight: bold;
             background: #2c3e50;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .text-green { color: #2ecc71; }
         .text-yellow { color: #f1c40f; }
@@ -40,23 +46,29 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 4px solid #1e8449;
-            max-width: 100%;
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            touch-action: none;
         }
         
         .panel {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 15px;
             background: #34495e;
             padding: 15px;
             border-radius: 8px;
-            width: 800px;
+            width: 100%;
+            max-width: 800px;
             box-sizing: border-box;
             justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         button {
-            padding: 10px 16px;
+            padding: 12px 18px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -66,20 +78,24 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             transition: all 0.2s ease;
             text-transform: uppercase;
+            touch-action: manipulation;
         }
         
         /* Button Colors */
-        .btn-action { background-color: #f1c40f; }
+        .btn-action { background-color: #f1c40f; flex-grow: 1; text-align: center; }
         .btn-action:hover:not(:disabled) { background-color: #f39c12; transform: translateY(-2px); }
         
-        .btn-bet { background-color: #3498db; color: white; border-radius: 50%; width: 50px; height: 50px; padding: 0;}
+        .btn-bet { background-color: #3498db; color: white; border-radius: 50%; width: 55px; height: 55px; padding: 0; flex-grow: 0;}
         .btn-bet:hover:not(:disabled) { background-color: #2980b9; transform: translateY(-2px); }
         
-        .btn-red { background-color: #e74c3c; color: white; }
+        .btn-red { background-color: #e74c3c; color: white; flex-grow: 1; }
         .btn-red:hover:not(:disabled) { background-color: #c0392b; transform: translateY(-2px); }
 
         .btn-green { background-color: #2ecc71; }
         .btn-green:hover:not(:disabled) { background-color: #27ae60; transform: translateY(-2px); }
+
+        .btn-small { padding: 8px 12px; font-size: 14px; flex-grow: 1; text-transform: none; font-weight: bold;}
+        .btn-large { padding: 16px 24px; font-size: 24px; width: 100%; letter-spacing: 2px; }
 
         button:disabled {
             background-color: #7f8c8d !important;
@@ -93,14 +109,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 800px;
-        }
-        .betting-area, .playing-area {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
             width: 100%;
+            max-width: 800px;
         }
         .hidden { display: none !important; }
 
@@ -116,15 +126,19 @@
         }
         .modal-content {
             background: #2c3e50;
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
             text-align: center;
             border: 2px solid #f1c40f;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
         }
         .modal-buttons {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
             margin-bottom: 20px;
@@ -132,11 +146,22 @@
         .modal-btn {
             background-color: #3498db;
             color: white;
-            font-size: 20px;
-            padding: 15px 25px;
+            font-size: 18px;
+            padding: 12px 20px;
+            flex-grow: 1;
         }
         .modal-btn:hover {
             background-color: #2980b9;
+        }
+
+        /* Responsive Media Queries for smaller screens */
+        @media (max-width: 600px) {
+            h1 { font-size: 24px; }
+            .hud { font-size: 16px; flex-direction: column; gap: 8px; }
+            button { font-size: 14px; padding: 10px 12px; }
+            .btn-bet { width: 45px; height: 45px; font-size: 14px; }
+            .btn-small { padding: 8px 8px; font-size: 14px; }
+            .btn-large { font-size: 22px; padding: 15px; width: 100%; }
         }
     </style>
 </head>
@@ -159,7 +184,7 @@
     <div id="insurance-modal" class="modal hidden">
         <div class="modal-content">
             <h2 style="margin-top: 0; color: #f1c40f;">Insurance?</h2>
-            <p style="font-size: 18px;">Dealer shows an Ace. Insurance costs $<span id="ins-cost"></span> and pays 2:1.</p>
+            <p style="font-size: 18px;">Dealer shows an Ace.<br>Cost: $<span id="ins-cost"></span> (Pays 2:1)</p>
             <div class="modal-buttons">
                 <button class="modal-btn btn-green" onclick="processInsurance(true)">Yes</button>
                 <button class="modal-btn btn-red" onclick="processInsurance(false)">No</button>
@@ -167,12 +192,12 @@
         </div>
     </div>
 
-    <h1>CANVAS CASINO</h1>
+    <h1>CLEOPATRA CASINO</h1>
     
     <div class="hud">
         <div>Balance: <span class="text-green">$<span id="display-balance">0</span></span></div>
         <div>Current Bet: <span class="text-yellow">$<span id="display-bet">0</span></span></div>
-        <button id="btn-buyin" class="btn-green" style="padding: 5px 15px;">Buy In</button>
+        <button id="btn-buyin" class="btn-green" style="padding: 8px 15px; flex-grow: 0;">Buy In</button>
     </div>
 
     <!-- The Game Board -->
@@ -181,20 +206,31 @@
     <div class="controls-wrapper">
         <!-- Betting Controls -->
         <div id="betting-panel" class="panel">
-            <span style="align-self: center; font-weight: bold; margin-right: 10px;">ADD CHIPS:</span>
-            <button class="btn-bet" onclick="addBet(5)">$5</button>
-            <button class="btn-bet" onclick="addBet(25)">$25</button>
-            <button class="btn-bet" onclick="addBet(100)">$100</button>
-            <button id="btn-clear-bet" class="btn-red" style="margin-left: 20px;">Clear Bet</button>
-            <button id="btn-last-bet" class="btn-action" style="margin-left: 10px;">Last Bet</button>
-            <button id="btn-deal" class="btn-action" style="margin-left: 20px; font-size: 20px;" disabled>Deal</button>
+            <div style="width: 100%; text-align: center; font-weight: bold; color: #bdc3c7;">ADD CHIPS:</div>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                <button class="btn-bet" onclick="addBet(5)">$5</button>
+                <button class="btn-bet" onclick="addBet(10)">$10</button>
+                <button class="btn-bet" onclick="addBet(25)">$25</button>
+                <button class="btn-bet" onclick="addBet(100)">$100</button>
+                <button class="btn-bet" onclick="addBet(500)">$500</button>
+            </div>
+            
+            <div style="width: 100%; height: 5px;"></div> <!-- visual break -->
+            
+            <div style="display: flex; gap: 10px; justify-content: center; width: 100%;">
+                <button id="btn-clear-bet" class="btn-red btn-small">Clear</button>
+                <button id="btn-last-bet" class="btn-action btn-small">Last</button>
+                <button id="btn-2x-bet" class="btn-action btn-small">2x</button>
+            </div>
+            
+            <button id="btn-deal" class="btn-green btn-large" disabled>DEAL</button>
         </div>
 
         <!-- Playing Controls -->
         <div id="playing-panel" class="panel hidden">
             <button id="btn-hit" class="btn-action">Hit</button>
             <button id="btn-stand" class="btn-action">Stand</button>
-            <button id="btn-double" class="btn-action">Double Down</button>
+            <button id="btn-double" class="btn-action">Double</button>
             <button id="btn-split" class="btn-action">Split</button>
         </div>
     </div>
@@ -215,6 +251,7 @@
         const btnDeal = document.getElementById('btn-deal');
         const btnClearBet = document.getElementById('btn-clear-bet');
         const btnLastBet = document.getElementById('btn-last-bet');
+        const btn2xBet = document.getElementById('btn-2x-bet');
         const btnHit = document.getElementById('btn-hit');
         const btnStand = document.getElementById('btn-stand');
         const btnDouble = document.getElementById('btn-double');
@@ -229,36 +266,30 @@
         
         let deck = [];
         let balance = 0;
-        let stagedBet = 0; // Bet being assembled before dealing
+        let stagedBet = 0; 
         let lastBetAmount = 0;
         let insuranceBet = 0;
         
-        // Hand structure: { cards: [], bet: int, isStood: bool, isBusted: bool, isDoubled: bool }
         let playerHands = []; 
         let activeHandIndex = 0;
         let dealerHand = [];
         
-        // States: 'betting', 'insurance', 'playing', 'dealerTurn', 'gameOver'
         let gameState = 'betting'; 
         let gameMessage = "Place your bets (Min $5)";
 
         // --- Utilities ---
         function updateHUD() {
             displayBalance.innerText = balance;
-            // If playing, show the total active bets. If betting, show staged bet.
             let totalBet = stagedBet;
             if (gameState !== 'betting') {
                 totalBet = playerHands.reduce((sum, h) => sum + h.bet, 0) + insuranceBet;
             }
             displayBet.innerText = totalBet;
-
-            // Enable/Disable Deal Button
             btnDeal.disabled = stagedBet < 5;
         }
 
         function buildDeck() {
             let newDeck = [];
-            // Use 6 decks for standard casino shoe
             for (let d = 0; d < 6; d++) {
                 for (let suit of suits) {
                     for (let value of values) {
@@ -302,7 +333,6 @@
         }
 
         // --- Game Actions ---
-        
         const buyinModal = document.getElementById('buyin-modal');
 
         document.getElementById('btn-buyin').addEventListener('click', () => {
@@ -345,8 +375,6 @@
 
         btnLastBet.addEventListener('click', () => {
             if (gameState !== 'betting' || lastBetAmount === 0) return;
-            
-            // Revert currently staged bet to balance before applying the last bet
             if (balance + stagedBet >= lastBetAmount) {
                 balance += stagedBet; 
                 stagedBet = lastBetAmount;
@@ -360,15 +388,28 @@
             }
         });
 
+        btn2xBet.addEventListener('click', () => {
+            if (gameState !== 'betting' || stagedBet === 0) return;
+            if (balance >= stagedBet) {
+                balance -= stagedBet;
+                stagedBet *= 2;
+                gameMessage = "";
+                updateHUD();
+                render();
+            } else {
+                gameMessage = "Not enough balance to double bet!";
+                render();
+            }
+        });
+
         btnDeal.addEventListener('click', () => {
             if (stagedBet < 5) return;
             
-            lastBetAmount = stagedBet; // Save for next round
+            lastBetAmount = stagedBet; 
             
             deck = buildDeck();
             shuffleDeck(deck);
             
-            // Initialize Player's first hand
             playerHands = [{
                 cards: [deck.pop(), deck.pop()],
                 bet: stagedBet,
@@ -378,14 +419,13 @@
             }];
             
             dealerHand = [deck.pop(), deck.pop()];
-            stagedBet = 0; // Clear staged bet as it's now locked in the hand
+            stagedBet = 0; 
             activeHandIndex = 0;
             insuranceBet = 0;
             
             bettingPanel.classList.add('hidden');
             playingPanel.classList.remove('hidden');
             
-            // Check for Insurance
             if (dealerHand[0].value === "A") {
                 gameState = 'insurance';
                 gameMessage = "Insurance pays 2:1";
@@ -433,15 +473,13 @@
 
         function resolveInsurance() {
             if (isBlackjack(dealerHand)) {
-                // Dealer has blackjack.
                 gameMessage = "Dealer has Blackjack!";
                 gameState = 'gameOver';
                 render();
-                calculatePayouts(); // Will handle paying insurance and losing main bet
+                calculatePayouts(); 
             } else {
-                // Dealer does not have blackjack. Lose insurance bet.
                 gameMessage = insuranceBet > 0 ? "Nobody home. Insurance lost." : "";
-                insuranceBet = 0; // Lost
+                insuranceBet = 0; 
                 gameState = 'playing';
                 updateHUD();
                 checkEarlyBlackjack();
@@ -450,7 +488,6 @@
         }
 
         // --- Playing Logic ---
-
         function updateButtonStates() {
             if (gameState !== 'playing') {
                 btnHit.disabled = true;
@@ -465,10 +502,8 @@
             btnHit.disabled = false;
             btnStand.disabled = false;
             
-            // Can double down on first 2 cards if enough balance
             btnDouble.disabled = !(activeHand.cards.length === 2 && balance >= activeHand.bet);
             
-            // Can split if 2 cards, same value, and enough balance (Max 4 hands)
             const canSplit = activeHand.cards.length === 2 && 
                              getCardValue(activeHand.cards[0]) === getCardValue(activeHand.cards[1]) &&
                              balance >= activeHand.bet &&
@@ -512,10 +547,9 @@
 
         btnSplit.addEventListener('click', () => {
             const hand = playerHands[activeHandIndex];
-            balance -= hand.bet; // Deduct for new hand
+            balance -= hand.bet; 
             updateHUD();
 
-            // Create new hand with 2nd card
             let newHand = {
                 cards: [hand.cards.pop(), deck.pop()],
                 bet: hand.bet,
@@ -524,13 +558,9 @@
                 isDoubled: false
             };
             
-            // Replenish current hand
             hand.cards.push(deck.pop());
-            
-            // Insert new hand right after current
             playerHands.splice(activeHandIndex + 1, 0, newHand);
             
-            // Note: If splitting Aces, casino rules usually force a stand. Let's keep it simple and let them play.
             updateButtonStates();
             render();
         });
@@ -538,7 +568,6 @@
         function nextHand() {
             activeHandIndex++;
             if (activeHandIndex >= playerHands.length) {
-                // All hands done. If all busted, skip dealer turn.
                 const allBusted = playerHands.every(h => h.isBusted);
                 if (allBusted) {
                     gameState = 'gameOver';
@@ -554,12 +583,11 @@
         }
 
         function playDealerTurn() {
-            updateButtonStates(); // Disable buttons
+            updateButtonStates(); 
             render();
             
             const dealerInterval = setInterval(() => {
                 let dealerScore = calculateScore(dealerHand);
-                // Hit on soft 17 (standard casino rule) or below 17
                 let aces = dealerHand.filter(c => c.value === 'A').length;
                 let isSoft17 = (dealerScore === 17 && aces > 0 && calculateScore(dealerHand.filter(c=>c.value !== 'A')) <= 6);
 
@@ -580,9 +608,8 @@
             const dealerBusted = dealerScore > 21;
             const dealerHasBJ = isBlackjack(dealerHand);
 
-            // Pay Insurance if applicable
             if (insuranceBet > 0 && dealerHasBJ) {
-                balance += (insuranceBet * 3); // Return original bet + 2:1 payout
+                balance += (insuranceBet * 3); 
             }
 
             playerHands.forEach((hand, idx) => {
@@ -594,7 +621,7 @@
                     status = "Bust";
                 } else if (hasBJ && !dealerHasBJ) {
                     status = "Blackjack!";
-                    const winAmt = hand.bet + (hand.bet * 1.5); // 3:2 payout
+                    const winAmt = hand.bet + (hand.bet * 1.5); 
                     balance += winAmt;
                     totalWon += (hand.bet * 1.5);
                 } else if (dealerHasBJ && !hasBJ) {
@@ -609,14 +636,13 @@
                     totalWon += hand.bet;
                 } else if (score === dealerScore) {
                     status = "Push";
-                    balance += hand.bet; // Return bet
+                    balance += hand.bet; 
                 } else {
                     status = "Lose";
                 }
                 hand.resultStr = status;
             });
 
-            // Set final message
             if (playerHands.length === 1) {
                 gameMessage = playerHands[0].resultStr;
                 if (totalWon > 0) gameMessage += ` (+$${totalWon})`;
@@ -627,7 +653,6 @@
             updateHUD();
             render();
 
-            // Reset UI for next bet after a small delay
             setTimeout(() => {
                 bettingPanel.classList.remove('hidden');
                 playingPanel.classList.add('hidden');
@@ -641,7 +666,6 @@
         }
 
         // --- Canvas Rendering ---
-
         function drawRoundedRect(ctx, x, y, width, height, radius) {
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
@@ -689,26 +713,27 @@
             const isRed = card.suit === '♥' || card.suit === '♦';
             ctx.fillStyle = isRed ? '#e74c3c' : '#2c3e50';
             
-            ctx.font = 'bold 20px Arial';
+            // Increased internal font sizes for readability on mobile screens
+            ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText(card.value, x + 6, y + 22);
+            ctx.fillText(card.value, x + 6, y + 24);
             
-            ctx.font = '14px Arial';
-            ctx.fillText(card.suit, x + 8, y + 38);
+            ctx.font = '18px Arial';
+            ctx.fillText(card.suit, x + 8, y + 42);
 
-            ctx.font = '40px Arial';
+            ctx.font = '50px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(card.suit, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 14);
+            ctx.fillText(card.suit, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 18);
             
             ctx.save();
             ctx.translate(x + CARD_WIDTH, y + CARD_HEIGHT);
             ctx.rotate(Math.PI);
             ctx.fillStyle = isRed ? '#e74c3c' : '#2c3e50';
-            ctx.font = 'bold 20px Arial';
+            ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText(card.value, 6, 22);
-            ctx.font = '14px Arial';
-            ctx.fillText(card.suit, 8, 38);
+            ctx.fillText(card.value, 6, 24);
+            ctx.font = '18px Arial';
+            ctx.fillText(card.suit, 8, 42);
             ctx.restore();
         }
 
@@ -727,7 +752,6 @@
         }
 
         function render() {
-            // Background Felt
             const gradient = ctx.createRadialGradient(
                 canvas.width/2, canvas.height/2, 50, 
                 canvas.width/2, canvas.height/2, canvas.width/1.2
@@ -737,53 +761,50 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Table Line
             ctx.beginPath();
             ctx.arc(canvas.width/2, -canvas.height + 220, canvas.width, 0, Math.PI);
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 4;
             ctx.stroke();
 
+            // Enlarged instructional text
             ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.font = '16px Arial';
+            ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
             ctx.fillText("BLACKJACK PAYS 3 TO 2", canvas.width / 2, 180);
+            ctx.font = '18px Arial';
             ctx.fillText("Dealer must draw to 16, and stand on all 17s", canvas.width / 2, 205);
 
             if (gameState === 'betting') {
-                // Show floating chips being bet
                 if (stagedBet > 0) {
                     ctx.fillStyle = '#f1c40f';
                     ctx.beginPath();
-                    ctx.arc(canvas.width/2, 350, 30, 0, Math.PI*2);
+                    ctx.arc(canvas.width/2, 350, 36, 0, Math.PI*2);
                     ctx.fill();
                     ctx.strokeStyle = '#c0392b';
                     ctx.lineWidth = 4;
                     ctx.stroke();
                     ctx.fillStyle = '#2c3e50';
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillText("$" + stagedBet, canvas.width/2, 357);
+                    ctx.font = 'bold 24px Arial';
+                    ctx.fillText("$" + stagedBet, canvas.width/2, 358);
                 }
             } else {
-                // DEALER
                 const hideDealerCard = (gameState === 'playing' || gameState === 'insurance');
-                drawHand(dealerHand, 30, hideDealerCard, canvas.width/2);
+                drawHand(dealerHand, 35, hideDealerCard, canvas.width/2);
                 
                 if (dealerHand.length > 0) {
                     ctx.fillStyle = 'white';
-                    ctx.font = 'bold 18px Arial';
+                    ctx.font = 'bold 22px Arial';
                     let dScore = hideDealerCard ? calculateScore([dealerHand[0]]) : calculateScore(dealerHand);
-                    ctx.fillText(`Dealer: ${dScore}`, canvas.width / 2, 20);
+                    ctx.fillText(`Dealer: ${dScore}`, canvas.width / 2, 25);
                 }
 
-                // PLAYER HANDS
                 const sections = playerHands.length;
                 const sectionWidth = canvas.width / sections;
 
                 playerHands.forEach((hand, idx) => {
                     const centerX = (sectionWidth * idx) + (sectionWidth / 2);
                     
-                    // Highlight active hand
                     if (gameState === 'playing' && idx === activeHandIndex) {
                         ctx.fillStyle = 'rgba(241, 196, 15, 0.2)';
                         drawRoundedRect(ctx, centerX - (sectionWidth/2) + 10, 240, sectionWidth - 20, 250, 10);
@@ -792,38 +813,37 @@
 
                     drawHand(hand.cards, 280, false, centerX);
                     
-                    // Score & Bet Info
+                    // Enlarged player text
                     ctx.fillStyle = 'white';
-                    ctx.font = 'bold 18px Arial';
+                    ctx.font = 'bold 22px Arial';
                     let scoreText = `Score: ${calculateScore(hand.cards)}`;
                     if (hand.isBusted) scoreText += " (BUST)";
                     ctx.fillText(scoreText, centerX, 260);
                     
                     ctx.fillStyle = '#f1c40f';
+                    ctx.font = '20px Arial';
                     ctx.fillText(`Bet: $${hand.bet}`, centerX, 430);
                     
                     if (hand.resultStr && gameState === 'gameOver') {
                         ctx.fillStyle = hand.resultStr === 'Win' || hand.resultStr === 'Blackjack!' ? '#2ecc71' : 
                                       (hand.resultStr === 'Push' ? '#f1c40f' : '#e74c3c');
-                        ctx.font = 'bold 24px Arial';
-                        ctx.fillText(hand.resultStr, centerX, 460);
+                        ctx.font = 'bold 28px Arial';
+                        ctx.fillText(hand.resultStr, centerX, 465);
                     }
                 });
             }
 
-            // Message Overlay
             if (gameMessage) {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(0, canvas.height / 2 - 30, canvas.width, 60);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
                 
                 ctx.fillStyle = '#f1c40f';
-                ctx.font = 'bold 32px Arial';
+                ctx.font = 'bold 40px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(gameMessage, canvas.width / 2, canvas.height / 2 + 10);
+                ctx.fillText(gameMessage, canvas.width / 2, canvas.height / 2 + 14);
             }
         }
 
-        // Initialize display
         updateHUD();
         render();
 
